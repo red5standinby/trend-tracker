@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Trend Tracker — Lunar Pixel</title>
-<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -168,10 +168,9 @@ function TrendForm({onSubmit,editItem,onCancel}){
     if(!editItem) setForm({niche:'Gamers',source:'Google Trends',keyword:'',productType:'T-Shirt',competition:'Medium',demand:'Moderate',notes:'',dateAdded:todayStr()});
   };
 
-  const Field=({label,children})=>(
-    <div className={children.type==='textarea'?'full':''}>
-      <label>{label}</label>{children}
-    </div>
+  const Field=({label,children})=>React.createElement('div',{className:children?.type==='textarea'?'full':''},
+    React.createElement('label',null,label),
+    children
   );
 
   return React.createElement('form',{onSubmit:handleSubmit,className:'form-card'},
