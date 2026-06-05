@@ -149,6 +149,14 @@ function todayStr(){
   return new Date().toISOString().slice(0,10);
 }
 
+// Field helper — defined outside component to prevent re-creation on each render
+function Field({label,children}){
+  return React.createElement('div',{className:children?.type==='textarea'?'full':''},
+    React.createElement('label',null,label),
+    children
+  );
+}
+
 // Form Component
 function TrendForm({onSubmit,editItem,onCancel}){
   const [form,setForm]=useState({
@@ -160,18 +168,14 @@ function TrendForm({onSubmit,editItem,onCancel}){
     if(editItem) setForm({...editItem});
   },[editItem]);
 
+  // Stable updater — use refs to avoid stale closures
   const set=(k,v)=>setForm(f=>({...f,[k]:v}));
   const handleSubmit=e=>{
     e.preventDefault();
     if(!form.keyword.trim()) return;
     onSubmit(form);
-    if(!editItem) setForm({niche:'Gamers',source:'Google Trends',keyword:'',productType:'T-Shirt',competition:'Medium',demand:'Moderate',notes:'',dateAdded:todayStr()});
+    if(!editItem) setForm(f=>({...f,niche:'Gamers',source:'Google Trends',keyword:'',productType:'T-Shirt',competition:'Medium',demand:'Moderate',notes:'',dateAdded:todayStr()}));
   };
-
-  const Field=({label,children})=>React.createElement('div',{className:children?.type==='textarea'?'full':''},
-    React.createElement('label',null,label),
-    children
-  );
 
   return React.createElement('form',{onSubmit:handleSubmit,className:'form-card'},
     React.createElement('div',{className:'form-grid'},
