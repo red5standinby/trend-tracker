@@ -134,10 +134,26 @@ const PIPELINE = ['Idea','Designing','Listed','Testing Ads','Winner','Killed'];
 
 const STORAGE_KEY = 'lunar_pixel_trends';
 
+const SEED_TRENDS = [
+  {id:'s1',title:'No. — MTG Counter Spell Dad',niche:'Gamer Dad',source:'TikTok',demand:'Hot',productType:'T-Shirt',notes:'Already listed on Shopify. MTG x Dad humor crossover.',date:'2026-06-07',status:'Idea'},
+  {id:'s2',title:'Beholder Dad / D&D Dad',niche:'TTRPG Dad',source:'Etsy',demand:'Hot',productType:'T-Shirt',notes:'D&D is mainstream. Dads playing D&D with their kids = huge crossover.',date:'2026-06-07',status:'Idea'},
+  {id:'s3',title:'Grill Master / BBQ Dad',niche:'Dad Lifestyle',source:'Google Trends',demand:'Hot',productType:'T-Shirt',notes:'Evergreen + summer peak. Simple typography win.',date:'2026-06-07',status:'Idea'},
+  {id:'s4',title:"I'm Not Old, I'm Classic — Retro Gamer",niche:'Retro Gamer',source:'Amazon',demand:'Warm',productType:'T-Shirt',notes:'Y2K nostalgia hitting 35-50 demographic.',date:'2026-06-07',status:'Idea'},
+  {id:'s5',title:'Best Dad in Universe 7',niche:'Anime Dad',source:'TikTok',demand:'Warm',productType:'T-Shirt',notes:'Already listed! DBZ x Dad humor. Needs ad testing.',date:'2026-06-07',status:'Idea'},
+  {id:'s6',title:'DLC Expansion Dad',niche:'Gamer Dad',source:'Etsy',demand:'Warm',productType:'T-Shirt',notes:'Dad life as a video game DLC metaphor.',date:'2026-06-07',status:'Idea'},
+  {id:'s7',title:'Stealth Wealth Dad',niche:'Dad Lifestyle',source:'Reddit',demand:'Cold',productType:'T-Shirt',notes:'Portfolio up 3%, BP up 100%',date:'2026-06-07',status:'Idea'},
+  {id:'s8',title:'Sober Dad',niche:'Lifestyle',source:'TikTok',demand:'Cold',productType:'T-Shirt',notes:'Growing sober-curious community.',date:'2026-06-07',status:'Idea'},
+  {id:'s9',title:'Star Wars Dad — Jedi Master',niche:'Geek Dad',source:'Trend Tracker',demand:'Warm',productType:'T-Shirt',notes:"Jaime's lane. Star Wars x Dad crossover.",date:'2026-06-07',status:'Idea'},
+  {id:'s10',title:'Chem Dad / Periodic Table Pun',niche:'Nerd Dad',source:'Pinterest',demand:'Cold',productType:'T-Shirt',notes:'"I Tell Dad Jokes Periodically" — science teacher niche.',date:'2026-06-07',status:'Idea'}
+];
+
 function loadTrends(){
   try{
     const d=localStorage.getItem(STORAGE_KEY);
-    return d ? JSON.parse(d) : [];
+    if(d) return JSON.parse(d);
+    // First visit — auto-seed
+    saveTrends(SEED_TRENDS);
+    return SEED_TRENDS;
   }catch{return []}
 }
 
@@ -147,14 +163,6 @@ function saveTrends(t){
 
 function todayStr(){
   return new Date().toISOString().slice(0,10);
-}
-
-// Field helper — defined outside component to prevent re-creation on each render
-function Field({label,children}){
-  return React.createElement('div',{className:children?.type==='textarea'?'full':''},
-    React.createElement('label',null,label),
-    children
-  );
 }
 
 // Form Component
@@ -168,14 +176,19 @@ function TrendForm({onSubmit,editItem,onCancel}){
     if(editItem) setForm({...editItem});
   },[editItem]);
 
-  // Stable updater — use refs to avoid stale closures
   const set=(k,v)=>setForm(f=>({...f,[k]:v}));
   const handleSubmit=e=>{
     e.preventDefault();
     if(!form.keyword.trim()) return;
     onSubmit(form);
-    if(!editItem) setForm(f=>({...f,niche:'Gamers',source:'Google Trends',keyword:'',productType:'T-Shirt',competition:'Medium',demand:'Moderate',notes:'',dateAdded:todayStr()}));
+    if(!editItem) setForm({niche:'Gamers',source:'Google Trends',keyword:'',productType:'T-Shirt',competition:'Medium',demand:'Moderate',notes:'',dateAdded:todayStr()});
   };
+
+  const Field=({label,children})=>(
+    <div className={children.type==='textarea'?'full':''}>
+      <label>{label}</label>{children}
+    </div>
+  );
 
   return React.createElement('form',{onSubmit:handleSubmit,className:'form-card'},
     React.createElement('div',{className:'form-grid'},
